@@ -4,7 +4,7 @@ import {findPort} from 'find-open-port';
 export default class ConfigManager{
     private configFile = "";
     private defaultConfig = {
-        image: "icp:latest",
+        image: "cryptoisgood/wdfx:latest",
         dfx: {
             hostPort: 8000
         }

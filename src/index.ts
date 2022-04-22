@@ -18,9 +18,30 @@ program
     });
 
 program
+    .command('deploy')
+    .description('Deploys all or a specific canister from the code in your project. By default, all canisters are deployed')
+    .option('--canister-name', `Specifies the name of the canister you want to deploy. If you don’t specify a canister name, all canisters defined in the dfx.json file are deployed`)
+    .option("--reinstall", "Force to reinstall")
+    .action(async (props) => {
+        const realWorkingDirectory = process.cwd();
+        const projectName = realWorkingDirectory.split("/").at(-1);
+        const args = ["exec", "-w", `/root/dfx/${projectName}`, "-it",  `icp-${projectName}`, "/bin/bash"];
+
+        spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, '-it', `icp-${projectName}`, '/bin/bash', '-c', 'sh /root/dfx/deploy.sh'], {
+            cwd: process.cwd(),
+            detached: true,
+            stdio: "inherit"
+        });
+
+        // const shell = spawn("docker", args, { stdio: 'inherit' });
+        // shell.on('close',(code)=>{console.log('[shell] terminated :',code)})
+    });
+
+
+program
     .command('start')
     .option('--clean', 'Cleans the state of the current project')
-    .option('--port', 'Cleans the state of the current project', "8120")
+    .option('--port', 'Cleans the state of the current project', "8000")
 
     .description('Starts the local replica and a web server for the current project')
     .action(async (source) => {

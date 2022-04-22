@@ -38,5 +38,7 @@ ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 
 WORKDIR /root/dfx
 COPY deploy.sh deploy.sh
+COPY dfx-new.sh dfx-new.sh
+COPY dfx-start.sh dfx-start.sh
 CMD tail -f /dev/null
 SHELL ["/bin/bash", "-c"]

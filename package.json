@@ -12,8 +12,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/pouchdb": "^6.4.0",
+    "chmodr": "^1.2.0",
     "commander": "^9.2.0",
+    "config": "^3.3.7",
+    "db-local": "^1.6.8",
+    "find-open-port": "^2.0.3",
+    "get-port": "^6.1.2",
     "node-docker-api": "^1.1.22",
+    "pouchdb": "^7.3.0",
     "ts-node": "^10.7.0"
   },
   "devDependencies": {

@@ -1,17 +1,19 @@
 FROM ubuntu:22.04
 MAINTAINER cryptoisgood
 ENV NODE_VERSION=14
-RUN apt-get update
-RUN apt-get install curl build-essential cmake libdigest-sha-perl -y
-RUN apt-get install libdigest-sha-perl -y
-# DFX
-RUN DFX_VERSION=0.9.3 sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
-
-# rust
+ENV PATH=/cargo/bin:/rust/bin:$PATH
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+ENV RUST_BACKTRACE=full
+ENV RUSTUP_HOME=/rust
+ENV CARGO_HOME=/cargo
+ENV NVM_DIR=/root/.nvm
+WORKDIR /root/dfx
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
+        libdigest-sha-perl \
+        cmake \
         curl \
         git \
         rsync \
@@ -19,24 +21,17 @@ RUN apt-get update && \
         libssl-dev \
         pkg-config && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
- \
-ENV RUST_BACKTRACE=full
-ENV RUSTUP_HOME=/rust
-ENV CARGO_HOME=/cargo
-ENV PATH=/cargo/bin:/rust/bin:$PATH
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs >> rustup.sh
-RUN sh rustup.sh -y
-RUN rustup target add wasm32-unknown-unknown
-# NVM
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-ENV NVM_DIR=/root/.nvm
-RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+    rm -rf /var/lib/apt/lists/* && \
+    sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)" && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs >> rustup.sh && \
+    sh rustup.sh -y && \
+    rm -rf rustup.sh && \
+    rustup target add wasm32-unknown-unknown && \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && \
+    . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION} && \
+    . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION} && \
+    . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
 
-WORKDIR /root/dfx
 COPY deploy.sh deploy.sh
 COPY dfx-new.sh dfx-new.sh
 COPY dfx-start.sh dfx-start.sh

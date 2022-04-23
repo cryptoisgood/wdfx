@@ -52,7 +52,7 @@ async function containerReady(projectName): Promise<boolean> {
 
 
 program.command("new")
-    .description("creates new dfx project")
+    .description("creates new wdfx project")
     .argument("<Project-name>", "Specifies the name of the project to create")
     .option("--type <type>", "Choose the type of canister in the starter project. Default to be motoko [default: motoko] [possible values: motoko, rust]", "motoko")
     .action(async (projectName, options) => {
@@ -86,12 +86,13 @@ program.command("new")
         }
         let userI = userInfo();
 
-        const args = ['exec', '-w', `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', `sh /root/dfx/dfx-new.sh ${projectName}`];
+        const args = ['exec', '-w', `/root/dfx/${projectName}`, "-e"  , `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', `sh /root/dfx/dfx-new.sh ${projectName}`];
 
         if (options.type) {
             args.push("--type");
             args.push(options.type);
         }
+
 
         spawn('docker', args, {
             cwd: process.cwd(),

@@ -8,7 +8,7 @@ This is an experimental tool and has not been thoroughly tested nor audited. Onl
 ## Requirements
 
 - [Docker](https://docs.docker.com/get-docker/)
-
+- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 ## Installation
 Use the package manager [NPM](https://github.com/nvm-sh/nvm/blob/master/README.md) to install WDFX.
 

@@ -171,7 +171,6 @@ program.command("reset")
         });
     });
 
-
 program
     .command('destroy')
     .description('destroys container and state of project')

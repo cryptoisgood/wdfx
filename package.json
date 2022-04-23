@@ -10,7 +10,7 @@
     "icp": "./src/index.ts"
   },
   "homepage": "https://www.cryptoisgood.net/",
-  "repository": "https://github.com/cryptoisgood/wdfx",,
+  "repository": "https://github.com/cryptoisgood/wdfx",
   "author": "cryptoisgood",
   "license": "MIT",
   "dependencies": {

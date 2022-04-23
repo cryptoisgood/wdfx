@@ -1,6 +1,6 @@
 {
   "name": "wdfx",
-  "version": "0.0.5-alpha",
+  "version": "0.0.6-alpha",
   "description": "wdfx is a cli wrapper for ICP dfx blockchain cli that runs inside of a docker container",
   "main": "src/index.ts",
   "scripts": {
@@ -10,6 +10,7 @@
     "icp": "./src/index.ts"
   },
   "homepage": "https://www.cryptoisgood.net/",
+  "repository": "https://github.com/cryptoisgood/wdfx",,
   "author": "cryptoisgood",
   "license": "MIT",
   "dependencies": {

@@ -1,5 +1,5 @@
 #! /usr/bin/env ts-node
-import { Command } from 'commander';
+import {Command} from 'commander';
 import {execSync, spawn} from 'child_process';
 import {homedir, userInfo} from 'os';
 import {Docker} from 'node-docker-api';
@@ -10,8 +10,9 @@ import ConfigManager from "./config-manager";
 
 const program = new Command();
 const state = new StateContainer();
-const docker = new Docker({ socketPath: '/var/run/docker.sock' });
+const docker = new Docker({socketPath: '/var/run/docker.sock'});
 docker.version().then();
+
 function destroy(container) {
     console.log("stopping dfx docker container...");
     const stdout = execSync(`docker stop ${container}`);
@@ -38,14 +39,14 @@ async function containerReady(projectName): Promise<boolean> {
         const dockerContainer = await docker.container.get(projectName);
         const containerWithStatus = await dockerContainer.status();
         const data: any = containerWithStatus.data;
-        if (data.State.OOMKilled || data.State.Dead || data.State.Paused ) {
+        if (data.State.OOMKilled || data.State.Dead || data.State.Paused) {
             console.error("ERROR: container is " + data.State.Status);
             console.error("ERROR: maybe run wdfx reset?");
             process.abort();
         }
 
         return data.State.Running;
-    }catch (e) {
+    } catch (e) {
         return false;
     }
 
@@ -68,7 +69,7 @@ program.command("new")
         try {
             execSync(`docker run -d --volume "${volumes}" -p ${port}:${port} --name ${projectName} ${image}`);
             await state.saveContainer(projectName);
-        }catch (e) {
+        } catch (e) {
             if (e.message.includes("already in use")) {
                 const containerExists = state.containerExists(projectName);
                 if (!containerExists) {
@@ -86,7 +87,7 @@ program.command("new")
         }
         let userI = userInfo();
 
-        const args = ['exec', '-w', `/root/dfx/${projectName}`, "-e"  , `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', `sh /root/dfx/dfx-new.sh ${projectName}`];
+        const args = ['exec', '-w', `/root/dfx/${projectName}`, "-e", `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', `sh /root/dfx/dfx-new.sh ${projectName}`];
 
         if (options.type) {
             args.push("--type");
@@ -112,12 +113,12 @@ program.command("init")
             console.error("Error: must be in an existing icp project, maybe run wdfx new");
             return;
         }
-        if (!existsSync(`${hDir}/.wdfx`)){
+        if (!existsSync(`${hDir}/.wdfx`)) {
             mkdirSync(`${hDir}/.wdfx`);
-            if (!existsSync(`${hDir}/.wdfx/containers`)){
+            if (!existsSync(`${hDir}/.wdfx/containers`)) {
                 mkdirSync(`${hDir}/.wdfx/containers`);
             }
-            if (!existsSync(`${hDir}/.wdfx/state`)){
+            if (!existsSync(`${hDir}/.wdfx/state`)) {
                 mkdirSync(`${hDir}/.wdfx/state`);
             }
         }
@@ -131,7 +132,7 @@ program.command("init")
         try {
             execSync(`docker run -d --volume "${volumes}" -p ${port}:${port} --name ${projectName} ${image}`);
             await state.saveContainer(projectName);
-        }catch (e) {
+        } catch (e) {
             if (e.message.includes("already in use")) {
                 const containerExists = state.containerExists(projectName);
                 if (!containerExists) {
@@ -171,7 +172,6 @@ program.command("reset")
     });
 
 
-
 program
     .command('destroy')
     .description('destroys container and state of project')
@@ -195,8 +195,6 @@ program
             destroy(container);
         });
     });
-
-
 
 
 program
@@ -228,7 +226,7 @@ program
                 shellCommand += " --no-wallet";
             }
 
-            spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', shellCommand], {
+            spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, "-e", `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', shellCommand], {
                 cwd: process.cwd(),
                 detached: true,
                 stdio: "inherit"
@@ -255,7 +253,7 @@ program
                 dfxStart = dfxStart + " --clean"
             }
 
-            const args = ["exec", "-w", `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, "-it", `${projectName}`, '/bin/bash', '-c', dfxStart];
+            const args = ["exec", "-w", `/root/dfx/${projectName}`, "-e", `HOST_UID=${userI.uid}`, "-it", `${projectName}`, '/bin/bash', '-c', dfxStart];
             if (source.clean) {
                 args.push("--clean");
             }
@@ -282,7 +280,7 @@ program
         }
         if (isContainerReady) {
             let userI = userInfo();
-            spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash'], {
+            spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, "-e", `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash'], {
                 cwd: process.cwd(),
                 detached: true,
                 stdio: "inherit"

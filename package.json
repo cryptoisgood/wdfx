@@ -1,7 +1,7 @@
 {
   "name": "wdfx",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.2-alpha",
+  "description": "wdfx is a cli wrapper for ICP dfx blockchain cli that runs inside of a docker container",
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,18 +9,13 @@
   "bin": {
     "icp": "./src/index.ts"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "cryptoisgood",
+  "license": "MIT",
   "dependencies": {
-    "@types/pouchdb": "^6.4.0",
-    "chmodr": "^1.2.0",
     "commander": "^9.2.0",
     "config": "^3.3.7",
-    "db-local": "^1.6.8",
     "find-open-port": "^2.0.3",
-    "get-port": "^6.1.2",
     "node-docker-api": "^1.1.22",
-    "pouchdb": "^7.3.0",
     "ts-node": "^10.7.0"
   },
   "devDependencies": {

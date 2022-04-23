@@ -7,13 +7,11 @@ import {Docker} from 'node-docker-api';
 import {existsSync, mkdirSync, readdirSync, writeFileSync} from "fs";
 import StateContainer from "./state-container";
 import ConfigManager from "./config-manager";
-import {readdir} from "fs/promises";
-
 
 const program = new Command();
 const state = new StateContainer();
 const docker = new Docker({ socketPath: '/var/run/docker.sock' });
-
+docker.version().then();
 function destroy(container) {
     console.log("stopping dfx docker container...");
     const stdout = execSync(`docker stop ${container}`);
@@ -30,7 +28,6 @@ function reset(container) {
     console.log(stdout.toString('utf8'))
 }
 
-
 async function containerReady(projectName): Promise<boolean> {
     const exists = await state.containerExists(projectName);
     if (!exists) {
@@ -41,15 +38,18 @@ async function containerReady(projectName): Promise<boolean> {
         const dockerContainer = await docker.container.get(projectName);
         const containerWithStatus = await dockerContainer.status();
         const data: any = containerWithStatus.data;
-        console.log(data.State)
+        if (data.State.OOMKilled || data.State.Dead || data.State.Paused ) {
+            console.error("ERROR: container is " + data.State.Status);
+            console.error("ERROR: maybe run wdfx reset?");
+            process.abort();
+        }
+
         return data.State.Running;
     }catch (e) {
         return false;
     }
 
 }
-
-
 
 program.command("new")
     .description("creates new wdfx project")
@@ -92,7 +92,6 @@ program.command("new")
             args.push("--type");
             args.push(options.type);
         }
-
 
         spawn('docker', args, {
             cwd: process.cwd(),
@@ -203,9 +202,10 @@ program
 program
     .command('deploy')
     .description('Deploys all or a specific canister from the code in your project. By default, all canisters are deployed')
-    .option('--canister-name', `Specifies the name of the canister you want to deploy. If you don’t specify a canister name, all canisters defined in the dfx.json file are deployed`)
+    .argument('<canisterName>', `Specifies the name of the canister you want to deploy. If you don’t specify a canister name, all canisters defined in the dfx.json file are deployed`)
     .option("--reinstall", "Force to reinstall")
-    .action(async (props) => {
+    .option("--noWallet", "Performs the create call with the user Identity as the Sender of messages. Bypasses the Wallet canister")
+    .action(async (canisterName, props) => {
         const realWorkingDirectory = process.cwd();
         const projectName = realWorkingDirectory.split("/").at(-1);
         let isContainerReady = false;
@@ -214,8 +214,21 @@ program
         }
         if (isContainerReady) {
             let userI = userInfo();
+            let shellCommand = 'sh /root/dfx/deploy.sh';
 
-            spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', 'sh /root/dfx/deploy.sh'], {
+            if (canisterName) {
+                shellCommand += " " + canisterName;
+            }
+
+            if (props.reinstall) {
+                shellCommand += " --reinstall";
+            }
+
+            if (props.noWallet) {
+                shellCommand += " --no-wallet";
+            }
+
+            spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash', '-c', shellCommand], {
                 cwd: process.cwd(),
                 detached: true,
                 stdio: "inherit"
@@ -236,13 +249,17 @@ program
         if (ready) {
             const config = new ConfigManager();
             const port = config.getPort()
-            console.log(port);
             let userI = userInfo();
+            let dfxStart = `sh /root/dfx/dfx-start.sh --host 127.0.0.1:${port}`;
+            if (source.clean) {
+                dfxStart = dfxStart + " --clean"
+            }
 
-            const args = ["exec", "-w", `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, "-it", `${projectName}`, '/bin/bash', '-c', `sh /root/dfx/dfx-start.sh --host 127.0.0.1:${port}`];
+            const args = ["exec", "-w", `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, "-it", `${projectName}`, '/bin/bash', '-c', dfxStart];
             if (source.clean) {
                 args.push("--clean");
             }
+
             const shell = spawn("docker", args, {stdio: 'inherit'});
             shell.on('close', (code) => {
                 console.log('[shell] terminated :', code)
@@ -252,5 +269,27 @@ program
             console.log("INFO: container is stopped run wdfx reset")
         }
     });
+
+program
+    .command('ssh')
+    .description('allows you to enter wdfx environment and execute dfx commands directly. for advanced users only')
+    .action(async (props) => {
+        const realWorkingDirectory = process.cwd();
+        const projectName = realWorkingDirectory.split("/").at(-1);
+        let isContainerReady = false;
+        while (!isContainerReady) {
+            isContainerReady = await containerReady(projectName);
+        }
+        if (isContainerReady) {
+            let userI = userInfo();
+            spawn('docker', ['exec', '-w', `/root/dfx/${projectName}`, "-e",  `HOST_UID=${userI.uid}`, '-it', `${projectName}`, '/bin/bash'], {
+                cwd: process.cwd(),
+                detached: true,
+                stdio: "inherit"
+            });
+        }
+
+    });
+
 
 program.parse();

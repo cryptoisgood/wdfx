@@ -4,5 +4,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 npm i
-dfx deploy
+dfx deploy "$@"
 chown -R "${HOST_UID}:${HOST_UID}" .

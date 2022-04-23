@@ -6,6 +6,7 @@ export default class ConfigManager{
     private defaultConfig = {
         image: "cryptoisgood/wdfx:latest",
         dfx: {
+            privateKey: "",
             hostPort: 8000
         }
     }

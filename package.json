@@ -9,6 +9,7 @@
   "bin": {
     "icp": "./src/index.ts"
   },
+  "homepage": "https://github.com/cryptoisgood/wdfx",
   "author": "cryptoisgood",
   "license": "MIT",
   "dependencies": {

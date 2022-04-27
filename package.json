@@ -1,6 +1,6 @@
 {
   "name": "wdfx",
-  "version": "0.0.6-alpha",
+  "version": "0.0.7-alpha",
   "description": "wdfx is a cli wrapper for ICP dfx blockchain cli that runs inside of a docker container",
   "main": "src/index.ts",
   "scripts": {

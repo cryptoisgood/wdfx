@@ -41,7 +41,7 @@ Commands:
 ```
 
 ### Existing Projects
-Calling wsdx within existing project will create a .wdfx configuration and launch a dfx container within your docker environment.
+Calling wdfx within existing project will create a .wdfx configuration and launch a dfx container within your docker environment.
 
 Will not edit anything else.
 ```CLI

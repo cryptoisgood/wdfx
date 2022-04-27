@@ -27,12 +27,12 @@ Options:
 
 Commands:
   new [options] <Project-name>     creates new wdfx project
-  init                             configured wdfx for your project
+  init                             configures your project to use wdfx
   reset [options]                  restart wdfx container
   destroy [options] <name>         destroys container and state of project
-  deploy [options] <canisterName>  Deploys all or a specific canister from the code in your
+  deploy [options] <canisterName>  deploys all or a specific canister from the code in your
                                    project. By default, all canisters are deployed
-  start [options]                  Starts the local replica and a web server for the current
+  start [options]                  starts the local replica and a web server for the current
                                    project
   ssh                              allows you to enter wdfx environment and execute dfx commands
                                    directly. for advanced users only

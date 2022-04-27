@@ -1,11 +1,12 @@
 {
   "name": "wdfx",
-  "version": "0.0.7-alpha",
+  "version": "0.0.8-alpha",
   "description": "wdfx is a cli wrapper for ICP dfx blockchain cli that runs inside of a docker container",
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": ["internet computer", "ic", "dfinity", "cli", "dfx"],
   "bin": {
     "icp": "./src/index.ts"
   },
